@@ -1,25 +1,25 @@
 package requests
 
 type Item struct {
-	OrderID                                       *int     `json:"OrderID"`
-	OrderItem                                     *int     `json:"OrderItem"`
-	OrderItemCategory                             string   `json:"OrderItemCategory"`
-	OrderItemText                                 string   `json:"OrderItemText"`
-	OrderItemTextByBuyer                          string   `json:"OrderItemTextByBuyer"`
-	OrderItemTextBySeller                         string   `json:"OrderItemTextBySeller"`
-	Product                                       string   `json:"Product"`
-	ProductStandardID                             string   `json:"ProductStandardID"`
-	ProductGroup                                  string   `json:"ProductGroup"`
-	BaseUnit                                      string   `json:"BaseUnit"`
+	OrderID                                       int      `json:"OrderID"`
+	OrderItem                                     int      `json:"OrderItem"`
+	OrderItemCategory                             *string  `json:"OrderItemCategory"`
+	OrderItemText                                 *string  `json:"OrderItemText"`
+	OrderItemTextByBuyer                          *string  `json:"OrderItemTextByBuyer"`
+	OrderItemTextBySeller                         *string  `json:"OrderItemTextBySeller"`
+	Product                                       *string  `json:"Product"`
+	ProductStandardID                             *string  `json:"ProductStandardID"`
+	ProductGroup                                  *string  `json:"ProductGroup"`
+	BaseUnit                                      *string  `json:"BaseUnit"`
 	PricingDate                                   *string  `json:"PricingDate"`
 	PriceDetnExchangeRate                         *float32 `json:"PriceDetnExchangeRate"`
 	RequestedDeliveryDate                         *string  `json:"RequestedDeliveryDate"`
 	DeliverFrom                                   *int     `json:"DeliverFrom"`
 	DeliverTo                                     *int     `json:"DeliverTo"`
-	StockConfirmationPartnerFunction              string   `json:"StockConfirmationPartnerFunction"`
+	StockConfirmationPartnerFunction              *string  `json:"StockConfirmationPartnerFunction"`
 	StockConfirmationBusinessPartner              *int     `json:"StockConfirmationBusinessPartner"`
-	StockConfirmationPlant                        string   `json:"StockConfirmationPlant"`
-	StockConfirmationPlantBatch                   string   `json:"StockConfirmationPlantBatch"`
+	StockConfirmationPlant                        *string  `json:"StockConfirmationPlant"`
+	StockConfirmationPlantBatch                   *string  `json:"StockConfirmationPlantBatch"`
 	StockConfirmationPlantBatchValidityStartDate  *string  `json:"StockConfirmationPlantBatchValidityStartDate"`
 	StockConfirmationPlantBatchValidityEndDate    *string  `json:"StockConfirmationPlantBatchValidityEndDate"`
 	ProductIsBatchManagedInStockConfirmationPlant *bool    `json:"ProductIsBatchManagedInStockConfirmationPlant"`
@@ -27,12 +27,12 @@ type Item struct {
 	OrderQuantityInBaseUnit                       *float32 `json:"OrderQuantityInBaseUnit"`
 	OrderQuantityInIssuingUnit                    *float32 `json:"OrderQuantityInIssuingUnit"`
 	OrderQuantityInReceivingUnit                  *float32 `json:"OrderQuantityInReceivingUnit"`
-	OrderIssuingUnit                              string   `json:"OrderIssuingUnit"`
-	OrderReceivingUnit                            string   `json:"OrderReceivingUnit"`
-	StockConfirmationPolicy                       string   `json:"StockConfirmationPolicy"`
-	StockConfirmationStatus                       string   `json:"StockConfirmationStatus"`
+	OrderIssuingUnit                              *string  `json:"OrderIssuingUnit"`
+	OrderReceivingUnit                            *string  `json:"OrderReceivingUnit"`
+	StockConfirmationPolicy                       *string  `json:"StockConfirmationPolicy"`
+	StockConfirmationStatus                       *string  `json:"StockConfirmationStatus"`
 	ConfirmedOrderQuantityInBaseUnit              *float32 `json:"ConfirmedOrderQuantityInBaseUnit"`
-	ItemWeightUnit                                string   `json:"ItemWeightUnit"`
+	ItemWeightUnit                                *string  `json:"ItemWeightUnit"`
 	ProductGrossWeight                            *float32 `json:"ProductGrossWeight"`
 	ItemGrossWeight                               *float32 `json:"ItemGrossWeight"`
 	ProductNetWeight                              *float32 `json:"ProductNetWeight"`
@@ -41,58 +41,58 @@ type Item struct {
 	TaxAmount                                     *float32 `json:"TaxAmount"`
 	GrossAmount                                   *float32 `json:"GrossAmount"`
 	BillingDocumentDate                           *string  `json:"BillingDocumentDate"`
-	ProductionPlantPartnerFunction                string   `json:"ProductionPlantPartnerFunction"`
+	ProductionPlantPartnerFunction                *string  `json:"ProductionPlantPartnerFunction"`
 	ProductionPlantBusinessPartner                *int     `json:"ProductionPlantBusinessPartner"`
-	ProductionPlant                               string   `json:"ProductionPlant"`
-	ProductionPlantTimeZone                       string   `json:"ProductionPlantTimeZone"`
-	ProductionPlantStorageLocation                string   `json:"ProductionPlantStorageLocation"`
-	IssuingPlantPartnerFunction                   string   `json:"IssuingPlantPartnerFunction"`
+	ProductionPlant                               *string  `json:"ProductionPlant"`
+	ProductionPlantTimeZone                       *string  `json:"ProductionPlantTimeZone"`
+	ProductionPlantStorageLocation                *string  `json:"ProductionPlantStorageLocation"`
+	IssuingPlantPartnerFunction                   *string  `json:"IssuingPlantPartnerFunction"`
 	IssuingPlantBusinessPartner                   *int     `json:"IssuingPlantBusinessPartner"`
-	IssuingPlant                                  string   `json:"IssuingPlant"`
-	IssuingPlantTimeZone                          string   `json:"IssuingPlantTimeZone"`
-	IssuingPlantStorageLocation                   string   `json:"IssuingPlantStorageLocation"`
-	ReceivingPlantPartnerFunction                 string   `json:"ReceivingPlantPartnerFunction"`
+	IssuingPlant                                  *string  `json:"IssuingPlant"`
+	IssuingPlantTimeZone                          *string  `json:"IssuingPlantTimeZone"`
+	IssuingPlantStorageLocation                   *string  `json:"IssuingPlantStorageLocation"`
+	ReceivingPlantPartnerFunction                 *string  `json:"ReceivingPlantPartnerFunction"`
 	ReceivingPlantBusinessPartner                 *int     `json:"ReceivingPlantBusinessPartner"`
-	ReceivingPlant                                string   `json:"ReceivingPlant"`
-	ReceivingPlantTimeZone                        string   `json:"ReceivingPlantTimeZone"`
-	ReceivingPlantStorageLocation                 string   `json:"ReceivingPlantStorageLocation"`
+	ReceivingPlant                                *string  `json:"ReceivingPlant"`
+	ReceivingPlantTimeZone                        *string  `json:"ReceivingPlantTimeZone"`
+	ReceivingPlantStorageLocation                 *string  `json:"ReceivingPlantStorageLocation"`
 	ProductIsBatchManagedInProductionPlant        *bool    `json:"ProductIsBatchManagedInProductionPlant"`
 	ProductIsBatchManagedInIssuingPlant           *bool    `json:"ProductIsBatchManagedInIssuingPlant"`
 	ProductIsBatchManagedInReceivingPlant         *bool    `json:"ProductIsBatchManagedInReceivingPlant"`
-	BatchMgmtPolicyInProductionPlant              string   `json:"BatchMgmtPolicyInProductionPlant"`
-	BatchMgmtPolicyInIssuingPlant                 string   `json:"BatchMgmtPolicyInIssuingPlant"`
-	BatchMgmtPolicyInReceivingPlant               string   `json:"BatchMgmtPolicyInReceivingPlant"`
-	ProductionPlantBatch                          string   `json:"ProductionPlantBatch"`
-	IssuingPlantBatch                             string   `json:"IssuingPlantBatch"`
-	ReceivingPlantBatch                           string   `json:"ReceivingPlantBatch"`
+	BatchMgmtPolicyInProductionPlant              *string  `json:"BatchMgmtPolicyInProductionPlant"`
+	BatchMgmtPolicyInIssuingPlant                 *string  `json:"BatchMgmtPolicyInIssuingPlant"`
+	BatchMgmtPolicyInReceivingPlant               *string  `json:"BatchMgmtPolicyInReceivingPlant"`
+	ProductionPlantBatch                          *string  `json:"ProductionPlantBatch"`
+	IssuingPlantBatch                             *string  `json:"IssuingPlantBatch"`
+	ReceivingPlantBatch                           *string  `json:"ReceivingPlantBatch"`
 	ProductionPlantBatchValidityStartDate         *string  `json:"ProductionPlantBatchValidityStartDate"`
 	ProductionPlantBatchValidityEndDate           *string  `json:"ProductionPlantBatchValidityEndDate"`
 	IssuingPlantBatchValidityStartDate            *string  `json:"IssuingPlantBatchValidityStartDate"`
 	IssuingPlantBatchValidityEndDate              *string  `json:"IssuingPlantBatchValidityEndDate"`
 	ReceivingPlantBatchValidityStartDate          *string  `json:"ReceivingPlantBatchValidityStartDate"`
 	ReceivingPlantBatchValidityEndDate            *string  `json:"ReceivingPlantBatchValidityEndDate"`
-	Incoterms                                     string   `json:"Incoterms"`
-	BPTaxClassification                           string   `json:"BPTaxClassification"`
-	ProductTaxClassification                      string   `json:"ProductTaxClassification"`
-	BPAccountAssignmentGroup                      string   `json:"BPAccountAssignmentGroup"`
-	ProductAccountAssignmentGroup                 string   `json:"ProductAccountAssignmentGroup"`
-	PaymentTerms                                  string   `json:"PaymentTerms"`
+	Incoterms                                     *string  `json:"Incoterms"`
+	BPTaxClassification                           *string  `json:"BPTaxClassification"`
+	ProductTaxClassification                      *string  `json:"ProductTaxClassification"`
+	BPAccountAssignmentGroup                      *string  `json:"BPAccountAssignmentGroup"`
+	ProductAccountAssignmentGroup                 *string  `json:"ProductAccountAssignmentGroup"`
+	PaymentTerms                                  *string  `json:"PaymentTerms"`
 	DueCalculationBaseDate                        *string  `json:"DueCalculationBaseDate"`
 	PaymentDueDate                                *string  `json:"PaymentDueDate"`
 	NetPaymentDays                                *int     `json:"NetPaymentDays"`
-	PaymentMethod                                 string   `json:"PaymentMethod"`
+	PaymentMethod                                 *string  `json:"PaymentMethod"`
 	DocumentRjcnReason                            *bool    `json:"DocumentRjcnReason"`
 	ItemBillingBlockReason                        *bool    `json:"ItemBillingBlockReason"`
-	Project                                       string   `json:"Project"`
+	Project                                       *string  `json:"Project"`
 	AccountingExchangeRate                        *float32 `json:"AccountingExchangeRate"`
 	ReferenceDocument                             *int     `json:"ReferenceDocument"`
 	ReferenceDocumentItem                         *int     `json:"ReferenceDocumentItem"`
 	ItemCompleteDeliveryIsDefined                 *bool    `json:"ItemCompleteDeliveryIsDefined"`
-	ItemDeliveryStatus                            string   `json:"ItemDeliveryStatus"`
-	IssuingStatus                                 string   `json:"IssuingStatus"`
-	ReceivingStatus                               string   `json:"ReceivingStatus"`
-	BillingStatus                                 string   `json:"BillingStatus"`
-	TaxCode                                       string   `json:"TaxCode"`
+	ItemDeliveryStatus                            *string  `json:"ItemDeliveryStatus"`
+	IssuingStatus                                 *string  `json:"IssuingStatus"`
+	ReceivingStatus                               *string  `json:"ReceivingStatus"`
+	BillingStatus                                 *string  `json:"BillingStatus"`
+	TaxCode                                       *string  `json:"TaxCode"`
 	TaxRate                                       *float32 `json:"TaxRate"`
-	CountryOfOrigin                               string   `json:"CountryOfOrigin"`
+	CountryOfOrigin                               *string  `json:"CountryOfOrigin"`
 }
