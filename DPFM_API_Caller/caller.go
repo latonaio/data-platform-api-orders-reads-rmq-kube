@@ -43,7 +43,7 @@ func (c *DPFMAPICaller) AsyncOrdersReads(
 	// SQL処理
 	response = c.readSqlProcess(nil, &mtx, input, output, accepter, &errs, log)
 
-	return response, nil
+	return response, errs
 }
 
 func checkResult(msg rabbitmq.RabbitmqMessage) bool {
