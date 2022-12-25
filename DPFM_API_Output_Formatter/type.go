@@ -35,6 +35,7 @@ type Message struct {
 	ItemPartnerPlant     *[]ItemPartnerPlant     `json:"ItemPartnerPlant"`
 	ItemPricingElement   *[]ItemPricingElement   `json:"ItemPricingElement"`
 	ItemSchedulingLine   *[]ItemSchedulingLine   `json:"ItemSchedulingLine"`
+	SellerItems          *[]SellerItems          `json:"SellerItems"`
 }
 
 type Orders struct {
@@ -155,10 +156,8 @@ type Item struct {
 	ProductIsBatchManagedInStockConfirmationPlant *bool    `json:"ProductIsBatchManagedInStockConfirmationPlant"`
 	ServicesRenderingDate                         *string  `json:"ServicesRenderingDate"`
 	OrderQuantityInBaseUnit                       *float32 `json:"OrderQuantityInBaseUnit"`
-	OrderQuantityInIssuingUnit                    *float32 `json:"OrderQuantityInIssuingUnit"`
-	OrderQuantityInReceivingUnit                  *float32 `json:"OrderQuantityInReceivingUnit"`
-	OrderIssuingUnit                              *string  `json:"OrderIssuingUnit"`
-	OrderReceivingUnit                            *string  `json:"OrderReceivingUnit"`
+	OrderQuantityInDeliveryUnit                   *float32 `json:"OrderQuantityInDeliveryUnit"`
+	DeliveryUnit                                  *string  `json:"DeliveryUnit"`
 	StockConfirmationPolicy                       *string  `json:"StockConfirmationPolicy"`
 	StockConfirmationStatus                       *string  `json:"StockConfirmationStatus"`
 	ConfirmedOrderQuantityInBaseUnit              *float32 `json:"ConfirmedOrderQuantityInBaseUnit"`
@@ -280,6 +279,15 @@ type ItemSchedulingLine struct {
 	OpenConfdDelivQtyInOrdQtyUnit                *float32 `json:"OpenConfdDelivQtyInOrdQtyUnit"`
 	DelivBlockReasonForSchedLine                 *bool    `json:"DelivBlockReasonForSchedLine"`
 	PlusMinusFlag                                *string  `json:"PlusMinusFlag"`
+}
+
+type SellerItems struct {
+	OrderID                               int     `json:"OrderID"`
+	BusinessPartnerFullName               *string `json:"BusinessPartnerFullName"`
+	BusinessPartnerName                   *string `json:"BusinessPartnerName"`
+	DeliverToPartyBusinessPartnerName     *string `json:"DeliverToPartyBusinessPartnerName"`
+	DeliverToPartyBusinessPartnerFullName *string `json:"DeliverToPartyBusinessPartnerFullName"`
+	HeaderDeliveryStatus                  *string `json:"HeaderDeliveryStatus"`
 }
 
 type Address struct {

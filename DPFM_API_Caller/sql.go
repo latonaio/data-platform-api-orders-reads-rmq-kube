@@ -29,11 +29,16 @@ func (c *DPFMAPICaller) readSqlProcess(
 	var itemPartnerPlant *[]dpfm_api_output_formatter.ItemPartnerPlant
 	var itemPricingElement *[]dpfm_api_output_formatter.ItemPricingElement
 	var itemSchedulingLine *[]dpfm_api_output_formatter.ItemSchedulingLine
+	var sellerItems *[]dpfm_api_output_formatter.SellerItems
 	for _, fn := range accepter {
 		switch fn {
 		case "Header":
 			func() {
 				header = c.Header(mtx, input, output, errs, log)
+			}()
+		case "HeaderByBuyer":
+			func() {
+				header = c.HeaderByBuyer(mtx, input, output, errs, log)
 			}()
 		case "HeaderPartner":
 			func() {
@@ -71,6 +76,10 @@ func (c *DPFMAPICaller) readSqlProcess(
 			func() {
 				itemSchedulingLine = c.ItemSchedulingLine(mtx, input, output, errs, log)
 			}()
+		case "SellerItems":
+			func() {
+				sellerItems = c.SellerItems(mtx, input, output, errs, log)
+			}()
 		default:
 		}
 		if len(*errs) != 0 {
@@ -89,6 +98,7 @@ func (c *DPFMAPICaller) readSqlProcess(
 		ItemPartnerPlant:     itemPartnerPlant,
 		ItemPricingElement:   itemPricingElement,
 		ItemSchedulingLine:   itemSchedulingLine,
+		SellerItems:          sellerItems,
 	}
 
 	return data
@@ -125,30 +135,39 @@ func (c *DPFMAPICaller) Header(
 		return nil
 	}
 
-	// // Buyerをキーにする場合
-	// buyer := input.Header.Buyer
+	return data
+}
 
-	// rows, err := c.db.Query(
-	// 	`SELECT OrderID, OrderDate, OrderType, Buyer, Seller, CreationDate, LastChangeDate, ContractType, ValidityStartDate,
-	//   ValidityEndDate, InvoicePeriodStartDate, InvoicePeriodEndDate, TotalNetAmount, TotalTaxAmount, TotalGrossAmount,
-	// 	HeaderDeliveryStatus, HeaderBlockStatus, HeaderBillingStatus, HeaderDocReferenceStatus, TransactionCurrency,
-	// 	PricingDate, PriceDetnExchangeRate, RequestedDeliveryDate, HeaderCompleteDeliveryIsDefined, HeaderBillingBlockStatus,
-	// 	HeaderDeliveryBlockStatus, Incoterms, BillFromParty, BillToParty, BillFromCountry, BillToCountry, Payer, Payee,
-	// 	PaymentTerms, PaymentMethod, ReferenceDocument, ReferenceDocumentItem, BPAccountAssignmentGroup, AccountingExchangeRate,
-	// 	InvoiceDocumentDate, IsExportImportDelivery, HeaderText
-	// 	FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_header_data
-	// 	WHERE Buyer = ?;`, buyer,
-	// )
-	// if err != nil {
-	// 	*errs = append(*errs, err)
-	// 	return nil
-	// }
+func (c *DPFMAPICaller) HeaderByBuyer(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.Header {
+	buyer := input.Header.Buyer
 
-	// data, err := dpfm_api_output_formatter.ConvertToHeader(input, rows)
-	// if err != nil {
-	// 	*errs = append(*errs, err)
-	// 	return nil
-	// }
+	rows, err := c.db.Query(
+		`SELECT OrderID, OrderDate, OrderType, Buyer, Seller, CreationDate, LastChangeDate, ContractType, ValidityStartDate,
+		ValidityEndDate, InvoicePeriodStartDate, InvoicePeriodEndDate, TotalNetAmount, TotalTaxAmount, TotalGrossAmount,
+		HeaderDeliveryStatus, HeaderBlockStatus, HeaderBillingStatus, HeaderDocReferenceStatus, TransactionCurrency,
+		PricingDate, PriceDetnExchangeRate, RequestedDeliveryDate, HeaderCompleteDeliveryIsDefined, HeaderBillingBlockStatus,
+		HeaderDeliveryBlockStatus, Incoterms, BillFromParty, BillToParty, BillFromCountry, BillToCountry, Payer, Payee,
+		PaymentTerms, PaymentMethod, ReferenceDocument, ReferenceDocumentItem, BPAccountAssignmentGroup, AccountingExchangeRate,
+		InvoiceDocumentDate, IsExportImportDelivery, HeaderText
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_header_data
+		WHERE Buyer = ?;`, buyer,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	data, err := dpfm_api_output_formatter.ConvertToHeader(input, rows)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
 
 	return data
 }
@@ -356,23 +375,28 @@ func (c *DPFMAPICaller) Item(
 	repeat := strings.Repeat("(?,?),", cnt-1) + "(?,?)"
 
 	rows, err := c.db.Query(
-		`SELECT OrderID, OrderItem, OrderItemCategory, OrderItemText, OrderItemTextByBuyer, OrderItemTextBySeller,
-		Product, ProductStandardID, ProductGroup, BaseUnit, PricingDate, PriceDetnExchangeRate, RequestedDeliveryDate,
-		DeliverFrom, DeliverTo, StockConfirmationPartnerFunction, StockConfirmationBusinessPartner, StockConfirmationPlant,
-		StockConfirmationPlantBatch, StockConfirmationPlantBatchValidityStartDate, StockConfirmationPlantBatchValidityEndDate,
-		ProductIsBatchManagedInStockConfirmationPlant, ServicesRenderingDate, OrderQuantityInBaseUnit, OrderQuantityInIssuingUnit,
-		OrderQuantityInReceivingUnit, OrderIssuingUnit, OrderReceivingUnit, StockConfirmationPolicy, StockConfirmationStatus,
-		ConfirmedOrderQuantityInBaseUnit, ItemWeightUnit, ProductGrossWeight, ItemGrossWeight, ProductNetWeight, ItemNetWeight,
-		NetAmount, TaxAmount, GrossAmount, BillingDocumentDate, ProductionPlantPartnerFunction, ProductionPlantBusinessPartner,
-		ProductionPlant, ProductionPlantTimeZone, ProductionPlantStorageLocation, IssuingPlantPartnerFunction, IssuingPlantBusinessPartner,
-		IssuingPlant, IssuingPlantTimeZone, IssuingPlantStorageLocation, ReceivingPlantPartnerFunction, ReceivingPlantBusinessPartner, ReceivingPlant,
-		ReceivingPlantTimeZone, ReceivingPlantStorageLocation, ProductIsBatchManagedInProductionPlant, ProductIsBatchManagedInIssuingPlant,
-		ProductIsBatchManagedInReceivingPlant, BatchMgmtPolicyInProductionPlant, BatchMgmtPolicyInIssuingPlant, BatchMgmtPolicyInReceivingPlant,
-		ProductionPlantBatch, IssuingPlantBatch, ReceivingPlantBatch, ProductionPlantBatchValidityStartDate, ProductionPlantBatchValidityEndDate,
-		IssuingPlantBatchValidityStartDate, IssuingPlantBatchValidityEndDate, ReceivingPlantBatchValidityStartDate, ReceivingPlantBatchValidityEndDate,
-		Incoterms, BPTaxClassification, ProductTaxClassification, BPAccountAssignmentGroup, ProductAccountAssignmentGroup, PaymentTerms, DueCalculationBaseDate,
-		NetPaymentDays, PaymentDueDate, PaymentMethod, DocumentRjcnReason, ItemBillingBlockReason, Project, AccountingExchangeRate, ReferenceDocument,
-		ReferenceDocumentItem, ItemCompleteDeliveryIsDefined, ItemDeliveryStatus, IssuingStatus, ReceivingStatus, BillingStatus, TaxCode, TaxRate, CountryOfOrigin
+		`SELECT OrderID, OrderItem, OrderItemCategory, OrderItemText, OrderItemTextByBuyer, 
+		OrderItemTextBySeller, Product, ProductStandardID, ProductGroup, BaseUnit, PricingDate, 
+		PriceDetnExchangeRate, RequestedDeliveryDate, DeliverFrom, DeliverTo, 
+		StockConfirmationPartnerFunction, StockConfirmationBusinessPartner, StockConfirmationPlant, 
+		StockConfirmationPlantBatch, StockConfirmationPlantBatchValidityStartDate, StockConfirmationPlantBatchValidityEndDate, 
+		ProductIsBatchManagedInStockConfirmationPlant, ServicesRenderingDate, OrderQuantityInBaseUnit, 
+		OrderQuantityInDeliveryUnit, DeliveryUnit, StockConfirmationPolicy, StockConfirmationStatus, 
+		ConfirmedOrderQuantityInBaseUnit, ItemWeightUnit, ProductGrossWeight, ItemGrossWeight, 
+		ProductNetWeight, ItemNetWeight, NetAmount, TaxAmount, GrossAmount, BillingDocumentDate, 
+		ProductionPlantPartnerFunction, ProductionPlantBusinessPartner, ProductionPlant, ProductionPlantTimeZone, 
+		ProductionPlantStorageLocation, IssuingPlantPartnerFunction, IssuingPlantBusinessPartner, IssuingPlant, 
+		IssuingPlantTimeZone, IssuingPlantStorageLocation, ReceivingPlantPartnerFunction, ReceivingPlantBusinessPartner, 
+		ReceivingPlant, ReceivingPlantTimeZone, ReceivingPlantStorageLocation, ProductIsBatchManagedInProductionPlant, 
+		ProductIsBatchManagedInIssuingPlant, ProductIsBatchManagedInReceivingPlant, BatchMgmtPolicyInProductionPlant, 
+		BatchMgmtPolicyInIssuingPlant, BatchMgmtPolicyInReceivingPlant, ProductionPlantBatch, IssuingPlantBatch, 
+		ReceivingPlantBatch, ProductionPlantBatchValidityStartDate, ProductionPlantBatchValidityEndDate, 
+		IssuingPlantBatchValidityStartDate, IssuingPlantBatchValidityEndDate, ReceivingPlantBatchValidityStartDate, 
+		ReceivingPlantBatchValidityEndDate, Incoterms, BPTaxClassification, ProductTaxClassification, 
+		BPAccountAssignmentGroup, ProductAccountAssignmentGroup, PaymentTerms, DueCalculationBaseDate, 
+		PaymentDueDate, NetPaymentDays, PaymentMethod, DocumentRjcnReason, ItemBillingBlockReason, Project, 
+		AccountingExchangeRate, ReferenceDocument, ReferenceDocumentItem, ItemCompleteDeliveryIsDefined, 
+		ItemDeliveryStatus, IssuingStatus, ReceivingStatus, BillingStatus, TaxCode, TaxRate, CountryOfOrigin
 		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_item_data
 		WHERE (OrderID, OrderItem) IN ( `+repeat+` );`, args...,
 	)
@@ -583,6 +607,47 @@ func (c *DPFMAPICaller) ItemSchedulingLine(
 	}
 
 	data, err := dpfm_api_output_formatter.ConvertToItemSchedulingLine(input, rows)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) SellerItems(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.SellerItems {
+	seller := input.Header.Seller
+
+	rows, err := c.db.Query(
+		`SELECT OrdersHeader.OrderID,
+       BusinessPartnerGeneral.BusinessPartnerFullName, 
+       BusinessPartnerGeneral.BusinessPartnerName,
+       BusinessPartnerGeneralForDeliverToParty.BusinessPartnerFullName as DeliverToPartyBusinessPartnerFullName,
+       BusinessPartnerGeneralForDeliverToParty.BusinessPartnerName as DeliverToPartyBusinessPartnerName,
+       OrdersHeader.HeaderDeliveryStatus
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_header_data as OrdersHeader
+		INNER JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_header_partner_data as OrdersHeaderPartner
+		ON OrdersHeader.OrderID = OrdersHeaderPartner.OrderID and OrdersHeader.Buyer = OrdersHeaderPartner.BusinessPartner
+		INNER JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_business_partner_general_data as BusinessPartnerGeneral
+		ON OrdersHeader.Seller = BusinessPartnerGeneral.BusinessPartner
+		INNER JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_item_data as OrdersItem
+		ON OrdersHeader.OrderID = OrdersItem.OrderID
+		LEFT JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_business_partner_general_data as BusinessPartnerGeneralForDeliverToParty
+		ON OrdersItem.DeliverToParty = BusinessPartnerGeneralForDeliverToParty.BusinessPartner
+		WHERE (OrdersHeader.Seller) = (?);`, seller,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	data, err := dpfm_api_output_formatter.ConvertToSellerItems(input, rows)
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil

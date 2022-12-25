@@ -342,10 +342,8 @@ func ConvertToItem(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]Item, error) {
 			&pm.ProductIsBatchManagedInStockConfirmationPlant,
 			&pm.ServicesRenderingDate,
 			&pm.OrderQuantityInBaseUnit,
-			&pm.OrderQuantityInIssuingUnit,
-			&pm.OrderQuantityInReceivingUnit,
-			&pm.OrderIssuingUnit,
-			&pm.OrderReceivingUnit,
+			&pm.OrderQuantityInDeliveryUnit,
+			&pm.DeliveryUnit,
 			&pm.StockConfirmationPolicy,
 			&pm.StockConfirmationStatus,
 			&pm.ConfirmedOrderQuantityInBaseUnit,
@@ -444,10 +442,8 @@ func ConvertToItem(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]Item, error) {
 			ProductIsBatchManagedInStockConfirmationPlant: data.ProductIsBatchManagedInStockConfirmationPlant,
 			ServicesRenderingDate:                         data.ServicesRenderingDate,
 			OrderQuantityInBaseUnit:                       data.OrderQuantityInBaseUnit,
-			OrderQuantityInIssuingUnit:                    data.OrderQuantityInIssuingUnit,
-			OrderQuantityInReceivingUnit:                  data.OrderQuantityInReceivingUnit,
-			OrderIssuingUnit:                              data.OrderIssuingUnit,
-			OrderReceivingUnit:                            data.OrderReceivingUnit,
+			OrderQuantityInDeliveryUnit:                   data.OrderQuantityInDeliveryUnit,
+			DeliveryUnit:                                  data.DeliveryUnit,
 			StockConfirmationPolicy:                       data.StockConfirmationPolicy,
 			StockConfirmationStatus:                       data.StockConfirmationStatus,
 			ConfirmedOrderQuantityInBaseUnit:              data.ConfirmedOrderQuantityInBaseUnit,
@@ -713,4 +709,43 @@ func ConvertToItemSchedulingLine(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]
 	}
 
 	return &itemSchedulingLine, nil
+}
+
+func ConvertToSellerItems(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]SellerItems, error) {
+	var sellerItem []SellerItems
+
+	for i := 0; true; i++ {
+		pm := &requests.SellerItems{}
+		if !rows.Next() {
+			if i == 0 {
+				return nil, fmt.Errorf("'data_platform_orders_header_data'テーブルに対象のレコードが存在しません。")
+			} else {
+				break
+			}
+		}
+		err := rows.Scan(
+			&pm.OrderID,
+			&pm.BusinessPartnerFullName,
+			&pm.BusinessPartnerName,
+			&pm.DeliverToPartyBusinessPartnerName,
+			&pm.DeliverToPartyBusinessPartnerFullName,
+			&pm.HeaderDeliveryStatus,
+		)
+		if err != nil {
+			fmt.Printf("err = %+v \n", err)
+			return nil, err
+		}
+
+		data := pm
+		sellerItem = append(sellerItem, SellerItems{
+			OrderID:                               data.OrderID,
+			BusinessPartnerFullName:               data.BusinessPartnerFullName,
+			BusinessPartnerName:                   data.BusinessPartnerName,
+			DeliverToPartyBusinessPartnerName:     data.DeliverToPartyBusinessPartnerName,
+			DeliverToPartyBusinessPartnerFullName: data.DeliverToPartyBusinessPartnerFullName,
+			HeaderDeliveryStatus:                  data.HeaderDeliveryStatus,
+		})
+	}
+
+	return &sellerItem, nil
 }

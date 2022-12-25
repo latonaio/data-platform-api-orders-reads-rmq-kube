@@ -25,10 +25,8 @@ type Item struct {
 	ProductIsBatchManagedInStockConfirmationPlant *bool    `json:"ProductIsBatchManagedInStockConfirmationPlant"`
 	ServicesRenderingDate                         *string  `json:"ServicesRenderingDate"`
 	OrderQuantityInBaseUnit                       *float32 `json:"OrderQuantityInBaseUnit"`
-	OrderQuantityInIssuingUnit                    *float32 `json:"OrderQuantityInIssuingUnit"`
-	OrderQuantityInReceivingUnit                  *float32 `json:"OrderQuantityInReceivingUnit"`
-	OrderIssuingUnit                              *string  `json:"OrderIssuingUnit"`
-	OrderReceivingUnit                            *string  `json:"OrderReceivingUnit"`
+	OrderQuantityInDeliveryUnit                   *float32 `json:"OrderQuantityInDeliveryUnit"`
+	DeliveryUnit                                  *string  `json:"DeliveryUnit"`
 	StockConfirmationPolicy                       *string  `json:"StockConfirmationPolicy"`
 	StockConfirmationStatus                       *string  `json:"StockConfirmationStatus"`
 	ConfirmedOrderQuantityInBaseUnit              *float32 `json:"ConfirmedOrderQuantityInBaseUnit"`
