@@ -36,6 +36,7 @@ type Message struct {
 	ItemPricingElement   *[]ItemPricingElement   `json:"ItemPricingElement"`
 	ItemSchedulingLine   *[]ItemSchedulingLine   `json:"ItemSchedulingLine"`
 	SellerItems          *[]SellerItems          `json:"SellerItems"`
+	BuyerItems           *[]BuyerItems           `json:"BuyerItems"`
 }
 
 type Orders struct {
@@ -282,6 +283,15 @@ type ItemSchedulingLine struct {
 }
 
 type SellerItems struct {
+	OrderID                               int     `json:"OrderID"`
+	BusinessPartnerFullName               *string `json:"BusinessPartnerFullName"`
+	BusinessPartnerName                   *string `json:"BusinessPartnerName"`
+	DeliverToPartyBusinessPartnerName     *string `json:"DeliverToPartyBusinessPartnerName"`
+	DeliverToPartyBusinessPartnerFullName *string `json:"DeliverToPartyBusinessPartnerFullName"`
+	HeaderDeliveryStatus                  *string `json:"HeaderDeliveryStatus"`
+}
+
+type BuyerItems struct {
 	OrderID                               int     `json:"OrderID"`
 	BusinessPartnerFullName               *string `json:"BusinessPartnerFullName"`
 	BusinessPartnerName                   *string `json:"BusinessPartnerName"`

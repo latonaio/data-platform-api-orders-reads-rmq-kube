@@ -712,10 +712,10 @@ func ConvertToItemSchedulingLine(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]
 }
 
 func ConvertToSellerItems(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]SellerItems, error) {
-	var sellerItem []SellerItems
+	var sellerItems []SellerItems
 
 	for i := 0; true; i++ {
-		pm := &requests.SellerItems{}
+		pm := &requests.SellerItem{}
 		if !rows.Next() {
 			if i == 0 {
 				return nil, fmt.Errorf("'data_platform_orders_header_data'テーブルに対象のレコードが存在しません。")
@@ -737,7 +737,7 @@ func ConvertToSellerItems(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]SellerI
 		}
 
 		data := pm
-		sellerItem = append(sellerItem, SellerItems{
+		sellerItems = append(sellerItems, SellerItems{
 			OrderID:                               data.OrderID,
 			BusinessPartnerFullName:               data.BusinessPartnerFullName,
 			BusinessPartnerName:                   data.BusinessPartnerName,
@@ -747,5 +747,44 @@ func ConvertToSellerItems(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]SellerI
 		})
 	}
 
-	return &sellerItem, nil
+	return &sellerItems, nil
+}
+
+func ConvertToBuyerItems(sdc *api_input_reader.SDC, rows *sql.Rows) (*[]BuyerItems, error) {
+	var buyerItems []BuyerItems
+
+	for i := 0; true; i++ {
+		pm := &requests.BuyerItem{}
+		if !rows.Next() {
+			if i == 0 {
+				return nil, fmt.Errorf("'data_platform_orders_header_data'テーブルに対象のレコードが存在しません。")
+			} else {
+				break
+			}
+		}
+		err := rows.Scan(
+			&pm.OrderID,
+			&pm.BusinessPartnerFullName,
+			&pm.BusinessPartnerName,
+			&pm.DeliverToPartyBusinessPartnerName,
+			&pm.DeliverToPartyBusinessPartnerFullName,
+			&pm.HeaderDeliveryStatus,
+		)
+		if err != nil {
+			fmt.Printf("err = %+v \n", err)
+			return nil, err
+		}
+
+		data := pm
+		buyerItems = append(buyerItems, BuyerItems{
+			OrderID:                               data.OrderID,
+			BusinessPartnerFullName:               data.BusinessPartnerFullName,
+			BusinessPartnerName:                   data.BusinessPartnerName,
+			DeliverToPartyBusinessPartnerName:     data.DeliverToPartyBusinessPartnerName,
+			DeliverToPartyBusinessPartnerFullName: data.DeliverToPartyBusinessPartnerFullName,
+			HeaderDeliveryStatus:                  data.HeaderDeliveryStatus,
+		})
+	}
+
+	return &buyerItems, nil
 }

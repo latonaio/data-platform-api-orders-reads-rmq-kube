@@ -30,6 +30,7 @@ func (c *DPFMAPICaller) readSqlProcess(
 	var itemPricingElement *[]dpfm_api_output_formatter.ItemPricingElement
 	var itemSchedulingLine *[]dpfm_api_output_formatter.ItemSchedulingLine
 	var sellerItems *[]dpfm_api_output_formatter.SellerItems
+	var buyerItems *[]dpfm_api_output_formatter.BuyerItems
 	for _, fn := range accepter {
 		switch fn {
 		case "Header":
@@ -80,6 +81,10 @@ func (c *DPFMAPICaller) readSqlProcess(
 			func() {
 				sellerItems = c.SellerItems(mtx, input, output, errs, log)
 			}()
+		case "BuyerItems":
+			func() {
+				buyerItems = c.BuyerItems(mtx, input, output, errs, log)
+			}()
 		default:
 		}
 		if len(*errs) != 0 {
@@ -99,6 +104,7 @@ func (c *DPFMAPICaller) readSqlProcess(
 		ItemPricingElement:   itemPricingElement,
 		ItemSchedulingLine:   itemSchedulingLine,
 		SellerItems:          sellerItems,
+		BuyerItems:           buyerItems,
 	}
 
 	return data
@@ -648,6 +654,47 @@ func (c *DPFMAPICaller) SellerItems(
 	}
 
 	data, err := dpfm_api_output_formatter.ConvertToSellerItems(input, rows)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
+func (c *DPFMAPICaller) BuyerItems(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.BuyerItems {
+	buyer := input.Header.Buyer
+
+	rows, err := c.db.Query(
+		`SELECT OrdersHeader.OrderID,
+       BusinessPartnerGeneral.BusinessPartnerFullName, 
+       BusinessPartnerGeneral.BusinessPartnerName,
+       BusinessPartnerGeneralForDeliverToParty.BusinessPartnerFullName as DeliverToPartyBusinessPartnerFullName,
+       BusinessPartnerGeneralForDeliverToParty.BusinessPartnerName as DeliverToPartyBusinessPartnerName,
+       OrdersHeader.HeaderDeliveryStatus
+		FROM DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_header_data as OrdersHeader
+		INNER JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_header_partner_data as OrdersHeaderPartner
+		ON OrdersHeader.OrderID = OrdersHeaderPartner.OrderID and OrdersHeader.Buyer = OrdersHeaderPartner.BusinessPartner
+		INNER JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_business_partner_general_data as BusinessPartnerGeneral
+		ON OrdersHeader.Seller = BusinessPartnerGeneral.BusinessPartner
+		INNER JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_orders_item_data as OrdersItem
+		ON OrdersHeader.OrderID = OrdersItem.OrderID
+		LEFT JOIN DataPlatformMastersAndTransactionsMysqlKube.data_platform_business_partner_general_data as BusinessPartnerGeneralForDeliverToParty
+		ON OrdersItem.DeliverToParty = BusinessPartnerGeneralForDeliverToParty.BusinessPartner
+		WHERE (OrdersHeader.Buyer) = (?);`, buyer,
+	)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	data, err := dpfm_api_output_formatter.ConvertToBuyerItems(input, rows)
 	if err != nil {
 		*errs = append(*errs, err)
 		return nil
